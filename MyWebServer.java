@@ -72,8 +72,12 @@ class WebServerWorker extends Thread {
         
       }
 
-      // Process request
-
+    // Process request
+    ArrayList<String> httpResponse = processRequest(sockdata);
+    for (int i = 0; i < httpResponse.size(); i++){
+        out.print(httpResponse.get(0));
+    }
+    out.flush();
 
       
      // sock.close(); 
@@ -127,6 +131,13 @@ class WebServerWorker extends Thread {
         // Error
     }
 
+    // Data
+    try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+        String line;
+        while ((line = br.readLine()) != null) {
+           response.add(line + "\r\n\r\n");
+        }
+    }
 
     return response;
   }
