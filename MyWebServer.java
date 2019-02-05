@@ -11,26 +11,46 @@ class FileHolder{
     public FileHolder(String rootName){
         this.rootName = rootName;
         files = new ArrayList<File>();
-
-        findFiles("C:\\temp");
     }
 
-    void findFiles(String dirName){
+    void findFiles(String fName){
 
-        File f1 = new File (dirName);
         
-        File[] strFilesDirs = f1.listFiles();
+        // String filePath = "";
+        // // try{
+        // //     File base = new File(".");
+        // //     filePath = base.getCanonicalPath();
+        // // } catch (Throwable e){
+        // //     e.printStackTrace();
+        // // }
         
-        for ( int i = 0 ; i < strFilesDirs.length ; i ++ ) {
-            if ( strFilesDirs[i].isDirectory ( ) ) {
-                String subDir = dirName + "\\" + strFilesDirs[i];
-                findFiles(subDir);
-            }
-            else if ( strFilesDirs[i].isFile()){
-                this.files.add(strFilesDirs[i]);
-            }
-        }
-       
+        // // filePath += "\\";
+        // // filePath += fName;
+        
+        // try{
+        //     // File f1 = new File (fName);
+        //     // if (f1.isFile()){
+        //     //     files.add(f1);
+        //     //     return;
+        //     // }
+
+        //     // File[] strFilesDirs = f1.listFiles();
+        
+        //     // for ( int i = 0 ; i < strFilesDirs.length ; i ++ ) {
+        //     //     if ( strFilesDirs[i].isDirectory ( ) ) {
+        //     //         String subDir = dirName + "\\" + strFilesDirs[i];
+        //     //         findFiles(subDir);
+        //     //     }
+        //     //     else if ( strFilesDirs[i].isFile()){
+        //     //         this.files.add(strFilesDirs[i]);
+        //     //     }
+        //     // }
+        // } catch(IOException e){
+        //     e.printStackTrace();
+        // }
+        
+        
+        
     }
 
     ArrayList<File> getFiles(){
@@ -71,7 +91,7 @@ class WebServerWorker extends Thread {
         }
 
         // Check for GET, HTTP version
-        if (tokens[0] != "GET" || !tokens[2].contains("HTTP/1.")){
+        if (!tokens[0].equals("GET") || !tokens[2].contains("HTTP/1.")){
             String errString = "<html> <h1> Error </h1> </html>";
             out.println("HTTP/1.1 200 OK");
             out.println("Date: " + new Date());
@@ -118,28 +138,41 @@ class WebServerWorker extends Thread {
     ArrayList<String> response = new ArrayList<String>();
 
     // Message type & HTTP version
-    response.add("HTTP/1.1 200 OK\r\n");
+    response.add("HTTP/1.1 200 OK");
     
     // Date and time
-    Date d = new Date();
-    String date = "Date: " +  d.toString() + "\r\n";
-    response.add(date);
+    response.add(new Date().toString());
 
     // Get files requested
-    FileHolder fh = new FileHolder(input);
+    //FileHolder fh = new FileHolder(input.substring(1));
+    //fh.findFiles(input.substring(1));
+    String filePath = "";
+     try{
+        File base = new File(".");
+        filePath += base.getCanonicalPath();
+    } 
+    catch (Throwable e){
+        e.printStackTrace();
+    }
+
+    filePath += "\\";
+    filePath += input.substring(1);
+    System.out.println(filePath);
+    File f = new File(filePath);
+
 
     // Content Length (file size)
-    ArrayList<File> files = fh.getFiles();
-    File f = files.get(0);
+    //ArrayList<File> files = fh.getFiles();
+    //File f = files.get(0);
     int contentLength = (int)f.length();
-    response.add("Content-Length: " + Integer.toString(contentLength) + "\r\n\r\n");
+    response.add("Content-length: " + Integer.toString(contentLength));
 
     // Content type
     if (f.getName().endsWith("txt")){
-        response.add("Content-Type: text/plain" + "\r\n");
+        response.add("Content-type: text/plain");
     }
     else if (f.getName().endsWith("html")){
-        response.add("Content-Type: text/html" + "\r\n");
+        response.add("Content-Type: text/html");
     }
     else{
         // Error
@@ -152,7 +185,7 @@ class WebServerWorker extends Thread {
     try (BufferedReader br = new BufferedReader(new FileReader(f))) {
         String line;
         while ((line = br.readLine()) != null) {
-           response.add(line + "\r\n\r\n");
+           response.add(line);
         }
     }catch(IOException e){
         e.printStackTrace();
