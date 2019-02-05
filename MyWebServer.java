@@ -108,6 +108,8 @@ class WebServerWorker extends Thread {
         String fileName = tokens[1];
         ArrayList<String> httpResponse = processRequest(fileName);
 
+        // Print each line of the response
+        // Includes the header and data
         for (int i = 0; i < httpResponse.size(); i++){
             out.println(httpResponse.get(i));
         }
@@ -122,6 +124,7 @@ class WebServerWorker extends Thread {
 
 
   /*
+  Sample response Header (Don't need all fields)
     HTTP/1.1 200 OK
     Date: Mon, 04 Feb 2019 20:08:50 GMT
     Server: Apache/2.2.3 (Red Hat)
@@ -143,6 +146,16 @@ class WebServerWorker extends Thread {
     // Date and time
     response.add(new Date().toString());
 
+    if (input.contains("..") || input.contains("~")){
+        response.add("Content-length: 5");
+        response.add("Content-type: text/plain");
+
+        //Blank line, flush
+        response.add("\r\n\r\n");
+        response.add("Error");
+        return response;
+    }
+
     // Get files requested
     //FileHolder fh = new FileHolder(input.substring(1));
     //fh.findFiles(input.substring(1));
@@ -160,6 +173,8 @@ class WebServerWorker extends Thread {
     System.out.println(filePath);
     File f = new File(filePath);
 
+
+// ADD HEADER DATA 
 
     // Content Length (file size)
     //ArrayList<File> files = fh.getFiles();
@@ -181,6 +196,8 @@ class WebServerWorker extends Thread {
     //Blank line, flush
     response.add("\r\n\r\n");
 
+// ADD BODY DATA
+
     // Data
     try (BufferedReader br = new BufferedReader(new FileReader(f))) {
         String line;
@@ -198,16 +215,18 @@ class WebServerWorker extends Thread {
 
 public class MyWebServer {
 
-  public static boolean controlSwitch = true;
+  public static boolean processRequests = true;
 
   public static void main(String a[]) throws IOException {
     int q_len = 6;
     int port = 2540;
     Socket sock;
 
+    // Server socket
     ServerSocket servsock = new ServerSocket(port, q_len);
 
-    while (controlSwitch) {
+    // Service browser connections as they come in
+    while (processRequests) {
       sock = servsock.accept();
       new WebServerWorker (sock).start();
     }
