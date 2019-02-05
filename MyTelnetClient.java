@@ -34,10 +34,13 @@ import java.net.*;
 
 public class MyTelnetClient{
   public static void main (String args[]) {
-      
+
     String serverName;
+    int port;
     if (args.length < 1) serverName = "localhost";
     else serverName = args[0];
+    if (args.length < 2) port = 80;
+    else port = Integer.parseInt(args[1]);
 
     Socket sock;
     BufferedReader fromServer;
@@ -45,13 +48,13 @@ public class MyTelnetClient{
     String textFromServer;
 
     System.out.println("MyTelnet Client\n");
-    System.out.println("Using server: " + serverName + ", Port: 80");
+    System.out.println("Using server: " + serverName + ", Port: " + args[1]);
 
     BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
     try {
 
-      sock = new Socket(serverName, 80);
+      sock = new Socket(serverName, port);
       fromServer = new BufferedReader(new InputStreamReader(sock.getInputStream()));
       toServer = new PrintStream(sock.getOutputStream());
 
