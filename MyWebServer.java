@@ -55,34 +55,48 @@ class WebServerWorker extends Thread {
 
     try {
 
-      out = new PrintStream(sock.getOutputStream());
-      in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-
-      String sockdata = "";
-
-      // Get request
-
-      while (!sockdata.equals("stop")) {
-
-        sockdata = in.readLine ();
-
-        if (sockdata != null){
-            
-        }
-        
-      }
-
-    // Process request
-    ArrayList<String> httpResponse = processRequest(sockdata);
-    for (int i = 0; i < httpResponse.size(); i++){
-        out.print(httpResponse.get(0));
-    }
-    out.flush();
+        out = new PrintStream(sock.getOutputStream());
+        in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
 
       
-     // sock.close(); 
+
+        // Get request
+        String getRequest = in.readLine();
+        String[] tokens = getRequest.split(" ");
+
+        // Read through the rest of the GET request
+        String sockdata = "";
+        while (!(sockdata = in.readLine()).equals("stop") && sockdata.length() > 0) {
+              // Ignore rest of GET request
+        }
+
+        // Check for GET, HTTP version
+        if (tokens[0] != "GET" || !tokens[2].contains("HTTP/1.")){
+            String errString = "<html> <h1> Error </h1> </html>";
+            out.println("HTTP/1.1 200 OK");
+            out.println("Date: " + new Date());
+            out.println("Content-type: " + "text/html");
+    	    out.println("Content-length: " + errString.length());
+    	    out.println(); 
+    	    out.flush(); 
+            out.println(errString);
+            out.flush();    
+            return;
+        }
+
+        // Process the request using the file requested
+        String fileName = tokens[1];
+        ArrayList<String> httpResponse = processRequest(fileName);
+
+        for (int i = 0; i < httpResponse.size(); i++){
+            out.println(httpResponse.get(i));
+        }
+        out.flush();
+
+        
+        // sock.close(); 
     } catch (IOException x) {
-      System.out.println("IO error");
+        System.out.println("IO error");
     }
   }
 
@@ -104,11 +118,11 @@ class WebServerWorker extends Thread {
     ArrayList<String> response = new ArrayList<String>();
 
     // Message type & HTTP version
-    response.add("HTTP/1.1 200 OK\r\n\r\n");
+    response.add("HTTP/1.1 200 OK\r\n");
     
     // Date and time
     Date d = new Date();
-    String date = "Date: " +  d.toGMTString() + "\r\n\r\n";
+    String date = "Date: " +  d.toString() + "\r\n";
     response.add(date);
 
     // Get files requested
@@ -117,19 +131,22 @@ class WebServerWorker extends Thread {
     // Content Length (file size)
     ArrayList<File> files = fh.getFiles();
     File f = files.get(0);
-    int contentLength = f.length();
+    int contentLength = (int)f.length();
     response.add("Content-Length: " + Integer.toString(contentLength) + "\r\n\r\n");
 
     // Content type
     if (f.getName().endsWith("txt")){
-        response.add("Content-Type: text/plain" + "\r\n\r\n");
+        response.add("Content-Type: text/plain" + "\r\n");
     }
     else if (f.getName().endsWith("html")){
-        response.add("Content-Type: text/html" + "\r\n\r\n");
+        response.add("Content-Type: text/html" + "\r\n");
     }
     else{
         // Error
     }
+
+    //Blank line, flush
+    response.add("\r\n\r\n");
 
     // Data
     try (BufferedReader br = new BufferedReader(new FileReader(f))) {
@@ -137,6 +154,8 @@ class WebServerWorker extends Thread {
         while ((line = br.readLine()) != null) {
            response.add(line + "\r\n\r\n");
         }
+    }catch(IOException e){
+        e.printStackTrace();
     }
 
     return response;
