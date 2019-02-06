@@ -1,3 +1,29 @@
+/*--------------------------------------------------------
+
+1. Luke Robbins / 2/5/2019
+
+2. Java 1.8
+
+3. Compilation Instructions
+
+> javac MyWebServer.java
+
+4. Run Instructions
+
+> java MyWebServer
+> Open FireFox, enter http://localhost:2540/[file or directory path]
+
+Hit Control-C to end the server application
+
+5. List of files needed for running the program.
+
+ a. MyWebServer.java
+ b. Any local directories/files
+
+6. Notes:
+
+----------------------------------------------------------*/
+
 
 import java.io.*;  
 import java.util.* ;
