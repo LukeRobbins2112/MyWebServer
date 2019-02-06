@@ -177,8 +177,24 @@ class WebServerWorker extends Thread {
     
     // Date and time
     response.add(new Date().toString());
+    
+    // Get path for file/directory requested
 
-    if (input.contains("..") || input.contains("~")){
+    String basePath = "";
+    String filePath = "";
+    File base = new File("");
+    String rootName = base.getAbsoluteFile().getName();
+
+     try{
+        
+        basePath += base.getCanonicalPath();
+        filePath += base.getCanonicalPath();
+    } 
+    catch (Throwable e){
+        e.printStackTrace();
+    }
+
+    if (basePath.equals(filePath) && (input.contains("..") || input.contains("~"))){
 
         String errMsg = "Error: Must stay within directory";
 
@@ -190,26 +206,13 @@ class WebServerWorker extends Thread {
         response.add(errMsg);
         return response;
     }
-    
-    // Get path for file/directory requested
-
-    String basePath = "";
-    String filePath = "";
-    File base = new File(".");
-
-     try{
-        
-        basePath += base.getCanonicalPath();
-        filePath += base.getCanonicalPath();
-    } 
-    catch (Throwable e){
-        e.printStackTrace();
-    }
 
     filePath += "\\";                   // Add leading back slash
     basePath += "\\";
 
-    filePath += input.substring(1);     // Remove original front slash from request
+    String relPath = input.substring(1);
+    relPath = relPath.replace("/", "\\");
+    filePath += relPath;     // Remove original front slash from request
     System.out.println(filePath);
 
     File f;
@@ -258,12 +261,14 @@ class WebServerWorker extends Thread {
 
         // Paren dir
         if (!filePath.equals(basePath)){
-            response.add("<a href=" + f.getParent() + ">" + "Parent Dir" + "</a> <br>");
+            response.add("<a href=" + f.getName() + "\\..\\" + ">" + "Parent Dir" + "</a> <br>");
         }
 
         // Other files/dirs
         for (int i = 0; i < files.size(); i++){
-            response.add("<a href=" + f.getName() + "\\" + files.get(i).getName() + ">" + files.get(i).getName() + "</a> <br>");
+            String parDir = f.getName();
+            if (f.getName().equals(rootName)) parDir = "";
+            response.add("<a href=" + parDir + "\\" + files.get(i).getName() + ">" + files.get(i).getName() + "</a> <br>");
         }
 
         response.add("</html>");
