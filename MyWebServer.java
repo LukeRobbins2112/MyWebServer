@@ -212,8 +212,8 @@ class WebServerWorker extends Thread {
     basePath += "\\";
 
     String relPath = input.substring(1);
-    relPath = relPath.replace("/", "\\");
-    filePath += relPath;     // Remove original front slash from request
+    String cPath = relPath.replace("/", "\\");
+    filePath += cPath;     // Remove original front slash from request
     System.out.println(filePath);
 
     File f;
@@ -262,7 +262,8 @@ class WebServerWorker extends Thread {
 
         // Paren dir
         if (!filePath.equals(basePath)){
-            response.add("<a href=" + "../" + ">" + "Parent Dir" + "</a> <br>");
+            String parentDir = "../";
+            response.add("<a href=" + parentDir + ">" + "Parent Dir" + "</a> <br>");
         }
 
         // Other files/dirs
