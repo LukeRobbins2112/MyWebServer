@@ -232,9 +232,9 @@ class WebServerWorker extends Thread {
 
         // Size
         int htmlSize = 13;
-        int breaklineSize = 4;
+        int lineHTMLSize = 18 + f.getName().length() + 1;
         int cr_lf_size = 4;
-        int totalSize = htmlSize + fh.getTotalSize() + (files.size() * breaklineSize) + (files.size() * cr_lf_size);
+        int totalSize = htmlSize + (fh.getTotalSize() * 2) + (files.size() * lineHTMLSize) + (files.size() * cr_lf_size);
         response.add("Content-length: " + Integer.toString(totalSize));
 
         //Blank line, flush
@@ -245,7 +245,8 @@ class WebServerWorker extends Thread {
         response.add("<html>");
 
         for (int i = 0; i < files.size(); i++){
-            response.add(files.get(i).getName() + "<br>");
+            //response.add(files.get(i).getName() + "<br>");
+            response.add("<a href=" + f.getName() + "\\" + files.get(i).getName() + ">" + files.get(i).getName() + "</a> <br>");
         }
 
         response.add("</html>");
