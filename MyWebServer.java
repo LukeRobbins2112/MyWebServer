@@ -114,6 +114,7 @@ class WebServerWorker extends Thread {
 
         // Get request
         String getRequest = in.readLine();
+        if (getRequest == null) return;
         String[] tokens = getRequest.split(" ");
 
         // Read through the rest of the GET request
@@ -261,14 +262,14 @@ class WebServerWorker extends Thread {
 
         // Paren dir
         if (!filePath.equals(basePath)){
-            response.add("<a href=" + f.getName() + "\\..\\" + ">" + "Parent Dir" + "</a> <br>");
+            response.add("<a href=" + f.getName() + "/.." + ">" + "Parent Dir" + "</a> <br>");
         }
 
         // Other files/dirs
         for (int i = 0; i < files.size(); i++){
             String parDir = f.getName();
             if (f.getName().equals(rootName)) parDir = "";
-            response.add("<a href=" + parDir + "\\" + files.get(i).getName() + ">" + files.get(i).getName() + "</a> <br>");
+            response.add("<a href=\"" + parDir + "/" + files.get(i).getName() + "\">" + files.get(i).getName() + "</a> <br>");
         }
 
         response.add("</html>");
