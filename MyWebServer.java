@@ -5,51 +5,46 @@ import java.net.*;
 
 class FileHolder{
 
-    String rootName;
+    String dirName;
+    int totalSize;
     ArrayList<File> files;
 
-    public FileHolder(String rootName){
-        this.rootName = rootName;
-        files = new ArrayList<File>();
+    public FileHolder(String dName){
+        this.dirName = dName;
+        this.totalSize = 0;
+        files = new ArrayList<>();
     }
 
     void findFiles(String fName){
+        
+        try{
 
-        
-        // String filePath = "";
-        // // try{
-        // //     File base = new File(".");
-        // //     filePath = base.getCanonicalPath();
-        // // } catch (Throwable e){
-        // //     e.printStackTrace();
-        // // }
-        
-        // // filePath += "\\";
-        // // filePath += fName;
-        
-        // try{
-        //     // File f1 = new File (fName);
-        //     // if (f1.isFile()){
-        //     //     files.add(f1);
-        //     //     return;
-        //     // }
+            // If it's a single file, just add it and return
+            File f1 = new File (fName);
+            if (f1.isFile()){
+                files.add(f1);
+                return;
+            }
+            else{
+                // Else, recurse on all the files in this directory
+                File[] strFilesDirs = f1.listFiles();
+                if (strFilesDirs.length == 0) return;
 
-        //     // File[] strFilesDirs = f1.listFiles();
-        
-        //     // for ( int i = 0 ; i < strFilesDirs.length ; i ++ ) {
-        //     //     if ( strFilesDirs[i].isDirectory ( ) ) {
-        //     //         String subDir = dirName + "\\" + strFilesDirs[i];
-        //     //         findFiles(subDir);
-        //     //     }
-        //     //     else if ( strFilesDirs[i].isFile()){
-        //     //         this.files.add(strFilesDirs[i]);
-        //     //     }
-        //     // }
-        // } catch(IOException e){
-        //     e.printStackTrace();
-        // }
-        
-        
+                 for (int i = 0 ; i < strFilesDirs.length ; i ++ ) {
+                     if ( strFilesDirs[i].isDirectory ( ) ) {
+                        this.files.add(strFilesDirs[i]);
+                         //findFiles(strFilesDirs[i].getName());
+                     }
+                    else if ( strFilesDirs[i].isFile()){
+                        this.files.add(strFilesDirs[i]);
+                    }
+                    this.totalSize += (int)strFilesDirs[i].getName().length();
+                }
+            }
+  
+        } catch(Exception e){
+            e.printStackTrace();
+        }
         
     }
 
@@ -57,6 +52,9 @@ class FileHolder{
         return this.files;
     }
 
+    int getTotalSize(){
+        return this.totalSize;
+    }
 
 }
 
@@ -147,18 +145,20 @@ class WebServerWorker extends Thread {
     response.add(new Date().toString());
 
     if (input.contains("..") || input.contains("~")){
-        response.add("Content-length: 5");
+
+        String errMsg = "Error: Must stay within directory";
+
+        response.add("Content-length: " + errMsg.length());
         response.add("Content-type: text/plain");
 
         //Blank line, flush
         response.add("\r\n\r\n");
-        response.add("Error");
+        response.add(errMsg);
         return response;
     }
+    
+    // Get path for file/directory requested
 
-    // Get files requested
-    //FileHolder fh = new FileHolder(input.substring(1));
-    //fh.findFiles(input.substring(1));
     String filePath = "";
      try{
         File base = new File(".");
@@ -168,44 +168,91 @@ class WebServerWorker extends Thread {
         e.printStackTrace();
     }
 
-    filePath += "\\";
-    filePath += input.substring(1);
+    filePath += "\\";                   // Add leading back slash
+    filePath += input.substring(1);     // Remove original front slash from request
     System.out.println(filePath);
-    File f = new File(filePath);
+
+    File f;
+
+    try{
+        f = new File(filePath);
+    } catch(Exception  e){
+        System.out.println("Error opening file -- incorrect path given");
+
+        String errMsg = "Error: Invalid file or directory name given";
+
+        response.add("Content-length: " + errMsg.length());
+        response.add("Content-type: text/plain");
+
+        //Blank line, flush
+        response.add("\r\n\r\n");
+        response.add(errMsg);
+        return response;
+    }
+    
 
 
 // ADD HEADER DATA 
+   
+    if (f.isDirectory()){
 
-    // Content Length (file size)
-    //ArrayList<File> files = fh.getFiles();
-    //File f = files.get(0);
-    int contentLength = (int)f.length();
-    response.add("Content-length: " + Integer.toString(contentLength));
+        // Get Directory files, name sizes
+        FileHolder fh = new FileHolder(f.getName());
+        fh.findFiles(filePath);
+        ArrayList<File> files = fh.getFiles();
 
-    // Content type
-    if (f.getName().endsWith("txt")){
-        response.add("Content-type: text/plain");
-    }
-    else if (f.getName().endsWith("html")){
-        response.add("Content-Type: text/html");
+        // Type
+        response.add("Content-type: text/html");
+
+        // Size
+        int htmlSize = 13;
+        int breaklineSize = 4;
+        int cr_lf_size = 4;
+        int totalSize = htmlSize + fh.getTotalSize() + (files.size() * breaklineSize) + (files.size() * cr_lf_size);
+        response.add("Content-length: " + Integer.toString(totalSize));
+
+        //Blank line, flush
+        response.add("\r\n\r\n");
+
+        // ADD BODY DATA
+
+        response.add("<html>");
+
+        for (int i = 0; i < files.size(); i++){
+            response.add(files.get(i).getName() + "<br>");
+        }
+
+        response.add("</html>");
     }
     else{
-        // Error
-    }
 
-    //Blank line, flush
-    response.add("\r\n\r\n");
-
-// ADD BODY DATA
-
-    // Data
-    try (BufferedReader br = new BufferedReader(new FileReader(f))) {
-        String line;
-        while ((line = br.readLine()) != null) {
-           response.add(line);
+        // Content type
+        if (f.getName().endsWith("txt")){
+            int contentLength = (int)f.length();
+            response.add("Content-length: " + Integer.toString(contentLength));
+            response.add("Content-type: text/plain");
         }
-    }catch(IOException e){
-        e.printStackTrace();
+        else if (f.getName().endsWith("html")){
+            int contentLength = (int)f.length();
+            response.add("Content-length: " + Integer.toString(contentLength));
+            response.add("Content-type: text/html");
+        }
+        else{
+            response.add("Content-type: text/html");
+        }
+
+        //Blank line, flush
+        response.add("\r\n\r\n");
+
+        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+               response.add(line);
+            }
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+
     }
 
     return response;
