@@ -57,6 +57,14 @@ class FileHolder{
                 if (strFilesDirs.length == 0) return;
 
                  for (int i = 0 ; i < strFilesDirs.length ; i ++ ) {
+
+                    if (strFilesDirs[i].getName().contains(".")){
+                        String dfName = strFilesDirs[i].getName();
+                        if (!dfName.endsWith(".txt") && !dfName.endsWith(".html")){
+                            continue;
+                        }
+                    }
+
                      if ( strFilesDirs[i].isDirectory ( ) ) {
                         this.files.add(strFilesDirs[i]);
                          //findFiles(strFilesDirs[i].getName());
@@ -185,9 +193,11 @@ class WebServerWorker extends Thread {
     
     // Get path for file/directory requested
 
+    String basePath = "";
     String filePath = "";
      try{
         File base = new File(".");
+        basePath += base.getCanonicalPath();
         filePath += base.getCanonicalPath();
     } 
     catch (Throwable e){
@@ -195,6 +205,8 @@ class WebServerWorker extends Thread {
     }
 
     filePath += "\\";                   // Add leading back slash
+    basePath += "\\";
+
     filePath += input.substring(1);     // Remove original front slash from request
     System.out.println(filePath);
 
@@ -231,25 +243,35 @@ class WebServerWorker extends Thread {
         response.add("Content-type: text/html");
 
         // Size
-        int htmlSize = 13;
-        int lineHTMLSize = 18 + f.getName().length() + 1;
-        int cr_lf_size = 4;
-        int totalSize = htmlSize + (fh.getTotalSize() * 2) + (files.size() * lineHTMLSize) + (files.size() * cr_lf_size);
-        response.add("Content-length: " + Integer.toString(totalSize));
+        response.add("Content-length: ");
 
         //Blank line, flush
         response.add("\r\n\r\n");
 
+        //******************
         // ADD BODY DATA
+        //******************
 
         response.add("<html>");
 
+        // Paren dir
+        if (!filePath.equals(basePath)){
+            response.add("<a href=" + basePath + ">" + "Parent Dir" + "</a> <br>");
+        }
+
+        // Other files/dirs
         for (int i = 0; i < files.size(); i++){
-            //response.add(files.get(i).getName() + "<br>");
-            response.add("<a href=" + f.getName() + "\\" + files.get(i).getName() + ">" + files.get(i).getName() + "</a> <br>");
+            response.add("<a href=" + files.get(i).getName() + ">" + files.get(i).getName() + "</a> <br>");
         }
 
         response.add("</html>");
+
+        int totalSize = 0;
+        for (int i = 5; i < response.size() - 1; i++){
+            totalSize += response.get(i).length();
+            totalSize += 2;
+        }
+        response.set(3, "Content-length: " + Integer.toString(totalSize));
     }
     else{
 
