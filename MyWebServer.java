@@ -262,7 +262,7 @@ class WebServerWorker extends Thread {
 
         // Paren dir
         if (!filePath.equals(basePath)){
-            response.add("<a href=" + f.getName() + "/.." + ">" + "Parent Dir" + "</a> <br>");
+            response.add("<a href=" + "../" + ">" + "Parent Dir" + "</a> <br>");
         }
 
         // Other files/dirs
