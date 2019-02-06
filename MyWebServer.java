@@ -148,7 +148,7 @@ class WebServerWorker extends Thread {
         out.flush();
 
         
-        // sock.close(); 
+         sock.close(); 
     } catch (IOException x) {
         System.out.println("IO error");
     }
@@ -195,8 +195,10 @@ class WebServerWorker extends Thread {
 
     String basePath = "";
     String filePath = "";
+    File base = new File(".");
+
      try{
-        File base = new File(".");
+        
         basePath += base.getCanonicalPath();
         filePath += base.getCanonicalPath();
     } 
@@ -256,12 +258,12 @@ class WebServerWorker extends Thread {
 
         // Paren dir
         if (!filePath.equals(basePath)){
-            response.add("<a href=" + basePath + ">" + "Parent Dir" + "</a> <br>");
+            response.add("<a href=" + f.getParent() + ">" + "Parent Dir" + "</a> <br>");
         }
 
         // Other files/dirs
         for (int i = 0; i < files.size(); i++){
-            response.add("<a href=" + files.get(i).getName() + ">" + files.get(i).getName() + "</a> <br>");
+            response.add("<a href=" + f.getName() + "\\" + files.get(i).getName() + ">" + files.get(i).getName() + "</a> <br>");
         }
 
         response.add("</html>");
