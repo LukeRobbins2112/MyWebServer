@@ -1,0 +1,249 @@
+C:\Users\Luke\source\java\WebServer>java MyWebServer
+RECEIVED REQUEST FROM CLIENT
+
+GET REQUEST:
+
+GET / HTTP/1.1
+Host: localhost:2540
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+
+SERVER RESPONSE:
+HTTP/1.1 200 OK
+Thu Feb 07 14:58:07 CST 2019
+Content-type: text/html
+Content-length: 280
+
+
+
+<html>
+<a href="/cat.html">cat.html</a> <br>
+<a href="/cgi">cgi</a> <br>
+<a href="/checklist-mywebserver.html">checklist-mywebserver.html</a> <br>
+<a href="/dog.txt">dog.txt</a> <br>
+<a href="/http-streams.txt">http-streams.txt</a> <br>
+<a href="/SubDir0">SubDir0</a> <br>
+</html>
+
+
+
+REQUEST COMPLETE-------------------------------------------
+
+RECEIVED REQUEST FROM CLIENT
+
+GET REQUEST:
+
+GET /http-streams.txt HTTP/1.1
+Host: localhost:2540
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Referer: http://localhost:2540/
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+
+SERVER RESPONSE:
+HTTP/1.1 200 OK
+Thu Feb 07 14:58:12 CST 2019
+Content-length: 1181
+Content-type: text/plain
+
+
+
+
+** HTTP Capture when browser contacts http://localhost:2540/cat/html **
+
+
+C:\Users\Luke\source\java\WebServer>java MyListener
+GET /cat.html HTTP/1.1
+Host: localhost:2540
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:56.0) Gecko/20100101 Firefox/56.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+
+-------------------------------------------------------------------------------
+
+** HTTP capture when MyTelnetClient contacts localhost to retrieve the dog.txt file **
+
+C:\Users\Luke\source\java\WebServer>java MyTelnetClient localhost 2540
+MyTelnet Client
+
+Using server: localhost, Port: 2540
+Enter text to send to the server, <stop> to end: GET /dog.txt HTTP/1.1
+Enter text to send to the server, <stop> to end: Host: localhost:2540
+Enter text to send to the server, <stop> to end:
+Enter text to send to the server, <stop> to end:
+Enter text to send to the server, <stop> to end: stop
+HTTP/1.1 200 OK
+Tue Feb 05 17:40:46 CST 2019
+Content-length: 23
+Content-type: text/plain
+
+
+
+This is Luke's dog file
+
+
+
+REQUEST COMPLETE-------------------------------------------
+
+RECEIVED REQUEST FROM CLIENT
+
+GET REQUEST:
+
+GET /SubDir0 HTTP/1.1
+Host: localhost:2540
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Referer: http://localhost:2540/
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+
+SERVER RESPONSE:
+HTTP/1.1 200 OK
+Thu Feb 07 14:58:14 CST 2019
+Content-type: text/html
+Content-length: 199
+
+
+
+<html>
+<a href=\>Parent Dir</a> <br>
+<a href="SubDir0/dir0_file1.txt">dir0_file1.txt</a> <br>
+<a href="SubDir0/dir0_file2.txt">dir0_file2.txt</a> <br>
+<a href="SubDir0/SubDir1">SubDir1</a> <br>
+</html>
+
+
+
+REQUEST COMPLETE-------------------------------------------
+
+RECEIVED REQUEST FROM CLIENT
+
+GET REQUEST:
+
+GET /SubDir0/SubDir1 HTTP/1.1
+Host: localhost:2540
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Referer: http://localhost:2540/SubDir0
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+
+SERVER RESPONSE:
+HTTP/1.1 200 OK
+Thu Feb 07 14:58:16 CST 2019
+Content-type: text/html
+Content-length: 104
+
+
+
+<html>
+<a href=\SubDir0>Parent Dir</a> <br>
+<a href="SubDir1/dir1_file1.txt">dir1_file1.txt</a> <br>
+</html>
+
+
+
+REQUEST COMPLETE-------------------------------------------
+
+RECEIVED REQUEST FROM CLIENT
+
+GET REQUEST:
+
+GET /SubDir0/SubDir1/dir1_file1.txt HTTP/1.1
+Host: localhost:2540
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Referer: http://localhost:2540/SubDir0/SubDir1
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+
+SERVER RESPONSE:
+HTTP/1.1 200 OK
+Thu Feb 07 14:58:17 CST 2019
+Content-length: 20
+Content-type: text/plain
+
+
+
+This is dir1, file 1
+
+
+
+REQUEST COMPLETE-------------------------------------------
+
+RECEIVED REQUEST FROM CLIENT
+
+GET REQUEST:
+
+GET /SubDir0 HTTP/1.1
+Host: localhost:2540
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Referer: http://localhost:2540/SubDir0/SubDir1
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+
+SERVER RESPONSE:
+HTTP/1.1 200 OK
+Thu Feb 07 14:58:18 CST 2019
+Content-type: text/html
+Content-length: 199
+
+
+
+<html>
+<a href=\>Parent Dir</a> <br>
+<a href="SubDir0/dir0_file1.txt">dir0_file1.txt</a> <br>
+<a href="SubDir0/dir0_file2.txt">dir0_file2.txt</a> <br>
+<a href="SubDir0/SubDir1">SubDir1</a> <br>
+</html>
+
+
+
+REQUEST COMPLETE-------------------------------------------
+
+RECEIVED REQUEST FROM CLIENT
+
+GET REQUEST:
+
+GET /SubDir0/dir0_file1.txt HTTP/1.1
+Host: localhost:2540
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Referer: http://localhost:2540/SubDir0
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+
+SERVER RESPONSE:
+HTTP/1.1 200 OK
+Thu Feb 07 14:58:19 CST 2019
+Content-length: 21
+Content-type: text/plain
+
+
+
+This is dir0.txt file
+
+
+
+REQUEST COMPLETE-------------------------------------------
