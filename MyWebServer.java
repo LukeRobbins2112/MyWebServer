@@ -262,12 +262,10 @@ class WebServerWorker extends Thread {
 
         // Paren dir
         if (!filePath.equals(basePath)){
-            int slashPos = filePath.lastIndexOf("\\");
-            String parentPath = filePath.substring(0, slashPos);
-            File parFile = new File(parentPath);
+            File parFile = new File(f.getParent());
             String parentDir = parFile.getName();
             if (parentDir.equals(rootName)) parentDir = "";
-
+            
             response.add("<a href=\\" + parentDir + ">" + "Parent Dir" + "</a> <br>");
         }
 
