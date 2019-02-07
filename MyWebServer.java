@@ -29,6 +29,45 @@ import java.io.*;
 import java.util.* ;
 import java.net.*;  
 
+class CGI_Data{
+
+    String name;
+    int num1;
+    int num2;
+    int result;
+ 
+    public CGI_Data(String input){
+        this.name = "";
+        this.num1 = 0;
+        this.num2 = 0;
+        this.result = 0;
+
+        extractInfo(input);
+    }
+
+    // GET /cgi/addnums.fake-cgi?person=LukeRobbins&num1=7&num2=8 HTTP/1.1
+
+    void extractInfo(String data){
+
+        data = data.substring(data.indexOf('?') + 1);     // person=LukeRobbins&num1=7&num2=8
+        String[] fields = data.split("&");                // [person=LukeRobbins, num1=7, num2=8]
+
+        this.name = fields[0].substring(fields[0].indexOf("=") + 1);
+        this.num1 = Integer.parseInt(fields[1].substring(fields[1].indexOf("=") + 1));
+        this.num2 = Integer.parseInt(fields[2].substring(fields[2].indexOf("=") + 1));
+
+        this.result = num1 + num2;
+    }
+
+    // "Dear [NAME], the sum of [NUM1] and [NUM2] is [RESULT]."
+    String getOutput(){
+        String result = "Dear " + this.name + ", the sum of " 
+                      + Integer.toString(num1) + " and " + Integer.toString(num2) + " is " + Integer.toString(this.result);
+
+        return result;
+    }
+}
+
 class FileHolder{
 
     String dirName;
@@ -156,6 +195,17 @@ class WebServerWorker extends Thread {
   }
 
 
+  // Addnums for fake_cgi request...having a separate function for this is kinda unnecessary
+  // But might as well follow the assignment to the letter
+  String addnums(String input){
+
+    CGI_Data cgiData = new CGI_Data(input);
+    return cgiData.getOutput();
+
+  }
+
+
+
   /*
   Sample response Header (Don't need all fields)
     HTTP/1.1 200 OK
@@ -207,6 +257,39 @@ class WebServerWorker extends Thread {
         response.add(errMsg);
         return response;
     }
+
+
+    /**************************** */
+    // Script
+    // GET /cgi/addnums.fake-cgi?person=LukeRobbins&num1=7&num2=8 HTTP/1.1
+    // "Dear [NAME], the sum of [NUM1] and [NUM2] is [RESULT]."
+
+    if (input.startsWith("/cgi/")){
+
+        response.add("Content-type: text/html");
+        response.add("Content-length: ");
+        response.add("\r\n\r\n");     //Blank line, flush
+
+        String output = addnums(input);
+    
+        // Script response
+        response.add("<html>");
+    
+        response.add(output);
+    
+        response.add("</html>");
+
+        int dataSize = 0;
+        for (int i = 5; i < response.size(); i++){
+            dataSize += response.get(i).length();
+        }
+        response.set(3, "Content-length: " + Integer.toString(dataSize));
+        return response;
+    
+    }
+
+    //*************************** */
+
 
     filePath += "\\";                   // Add leading back slash
     basePath += "\\";
