@@ -255,6 +255,8 @@ class WebServerWorker extends Thread {
         e.printStackTrace();
     }
 
+    // Must stay within server directory tree
+    // Check ".." and "~", but not the ".ht" files like 150-line webserver, not sure what that's for
     if (basePath.equals(filePath) && (input.contains("..") || input.contains("~"))){
 
         String errMsg = "Error: Must stay within directory";
@@ -342,7 +344,7 @@ class WebServerWorker extends Thread {
         response.add("Content-type: text/html");
 
         // Size
-        response.add("Content-length: ");
+        response.add("Content-length: ");  // Placeholder until we get length
 
         //Blank line, flush
         response.add("\r\n\r\n");
@@ -353,7 +355,7 @@ class WebServerWorker extends Thread {
 
         response.add("<html>");
 
-        // Paren dir
+        // Paren directory link
         if (!filePath.equals(basePath)){
             File parFile = new File(f.getParent());
             String parentDir = parFile.getName();
@@ -366,6 +368,8 @@ class WebServerWorker extends Thread {
         for (int i = 0; i < files.size(); i++){
             String parDir = f.getName();
             if (f.getName().equals(rootName)) parDir = "";
+
+            // Wrap each file name in a link
             response.add("<a href=\"" + parDir + "/" + files.get(i).getName() + "\">" + files.get(i).getName() + "</a> <br>");
         }
 
@@ -380,7 +384,8 @@ class WebServerWorker extends Thread {
     }
     else{
 
-        // Content type
+        // Content type, length
+        // For length, just read the file size
         if (f.getName().endsWith("txt")){
             int contentLength = (int)f.length();
             response.add("Content-length: " + Integer.toString(contentLength));
@@ -398,6 +403,8 @@ class WebServerWorker extends Thread {
         //Blank line, flush
         response.add("\r\n\r\n");
 
+        // Read each line of the file
+        // Add it to the response
         try (BufferedReader br = new BufferedReader(new FileReader(f))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -427,6 +434,7 @@ public class MyWebServer {
     ServerSocket servsock = new ServerSocket(port, q_len);
 
     // Service browser connections as they come in
+    // Like Inet/Joke Server, spawn new threads to handle each
     while (processRequests) {
       sock = servsock.accept();
       new WebServerWorker (sock).start();
