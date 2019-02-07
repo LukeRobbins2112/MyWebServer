@@ -12,6 +12,7 @@
 
 > java MyWebServer
 > Open FireFox, enter http://localhost:2540/[file or directory path]
+> Click through directory links to navigate or view HTML/text files
 
 Hit Control-C to end the server application
 
