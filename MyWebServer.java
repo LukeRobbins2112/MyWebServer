@@ -174,27 +174,13 @@ class WebServerWorker extends Thread {
         System.out.println(getRequest);
 
         // Read through the rest of the GET request
+        // Ignore this "unnecessary" info, as in 150-line web server
         String sockdata = "";
         while (!(sockdata = in.readLine()).equals("stop") && sockdata.length() > 0) {
               // Ignore rest of GET request
               System.out.println(sockdata);
         }
         System.out.println();
-
-        // Check for GET, HTTP version
-        if (!tokens[0].equals("GET") || !tokens[2].contains("HTTP/1.")){
-            System.out.println("ERROR WITH REQUEST - INVALID MESSAGE TYPE OR HTTP VERSION\n");
-            String errString = "<html> <h1> Error </h1> </html>";
-            out.println("HTTP/1.1 200 OK");
-            out.println("Date: " + new Date());
-            out.println("Content-type: " + "text/html");
-    	    out.println("Content-length: " + errString.length());
-    	    out.println(); 
-    	    out.flush(); 
-            out.println(errString);
-            out.flush();    
-            return;
-        }
 
         // Process the request using the file requested
         ArrayList<String> httpResponse = processRequest(fileName);
