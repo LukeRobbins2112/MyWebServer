@@ -88,6 +88,7 @@ class FileHolder{
         files = new ArrayList<>();
     }
 
+    // Uses the idea from ReadFiles.java displayed - get all files in directory
     void findFiles(String fName){
         
         try{
@@ -100,26 +101,26 @@ class FileHolder{
             }
             else{
                 // Else, recurse on all the files in this directory
-                File[] strFilesDirs = f1.listFiles();
-                if (strFilesDirs.length == 0) return;
+                File[] filesInDirectory = f1.listFiles();
+                if (filesInDirectory.length == 0) return;
 
-                 for (int i = 0 ; i < strFilesDirs.length ; i ++ ) {
+                 for (int i = 0; i < filesInDirectory.length; i++) {
 
-                    if (strFilesDirs[i].getName().contains(".")){
-                        String dfName = strFilesDirs[i].getName();
+                    if (filesInDirectory[i].getName().contains(".")){
+                        String dfName = filesInDirectory[i].getName();
                         if (!dfName.endsWith(".txt") && !dfName.endsWith(".html")){
                             continue;
                         }
                     }
 
-                     if ( strFilesDirs[i].isDirectory ( ) ) {
-                        this.files.add(strFilesDirs[i]);
-                         //findFiles(strFilesDirs[i].getName());
+                     if (filesInDirectory[i].isDirectory()) {
+                        this.files.add(filesInDirectory[i]);
+                         //findFiles(filesInDirectory[i].getName());
                      }
-                    else if ( strFilesDirs[i].isFile()){
-                        this.files.add(strFilesDirs[i]);
+                    else if ( filesInDirectory[i].isFile()){
+                        this.files.add(filesInDirectory[i]);
                     }
-                    this.totalSize += (int)strFilesDirs[i].getName().length();
+                    this.totalSize += (int)filesInDirectory[i].getName().length();
                 }
             }
   
