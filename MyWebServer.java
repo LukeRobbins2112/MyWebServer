@@ -29,6 +29,10 @@ import java.io.*;
 import java.util.* ;
 import java.net.*;  
 
+
+// *****************************************
+// Utility class for handling CGI requests
+// *****************************************
 class CGI_Data{
 
     String name;
@@ -68,6 +72,9 @@ class CGI_Data{
     }
 }
 
+// *****************************************
+// Utility class for parsing directories
+// *****************************************
 class FileHolder{
 
     String dirName;
@@ -131,6 +138,9 @@ class FileHolder{
 
 }
 
+// *******************************************************************
+// Main worker class, handles each incoming connection request
+// *******************************************************************
 class WebServerWorker extends Thread {  
 
   Socket sock;                  
@@ -152,18 +162,27 @@ class WebServerWorker extends Thread {
       
 
         // Get request
+        System.out.println("RECEIVED REQUEST FROM CLIENT\n");
         String getRequest = in.readLine();
         if (getRequest == null) return;
         String[] tokens = getRequest.split(" ");
+        String fileName = tokens[1];
+
+        // Debug printing
+        System.out.println("GET REQUEST:\n");
+        System.out.println(getRequest);
 
         // Read through the rest of the GET request
         String sockdata = "";
         while (!(sockdata = in.readLine()).equals("stop") && sockdata.length() > 0) {
               // Ignore rest of GET request
+              System.out.println(sockdata);
         }
+        System.out.println();
 
         // Check for GET, HTTP version
         if (!tokens[0].equals("GET") || !tokens[2].contains("HTTP/1.")){
+            System.out.println("ERROR WITH REQUEST - INVALID MESSAGE TYPE OR HTTP VERSION\n");
             String errString = "<html> <h1> Error </h1> </html>";
             out.println("HTTP/1.1 200 OK");
             out.println("Date: " + new Date());
@@ -177,18 +196,22 @@ class WebServerWorker extends Thread {
         }
 
         // Process the request using the file requested
-        String fileName = tokens[1];
         ArrayList<String> httpResponse = processRequest(fileName);
 
         // Print each line of the response
         // Includes the header and data
+        System.out.println("SERVER RESPONSE: ");
         for (int i = 0; i < httpResponse.size(); i++){
             out.println(httpResponse.get(i));
+            System.out.println(httpResponse.get(i));
         }
         out.flush();
-
+        System.out.println("\n\n");
         
-         sock.close(); 
+        sock.close(); 
+
+        System.out.println("REQUEST COMPLETE-------------------------------------------\n");
+
     } catch (IOException x) {
         System.out.println("IO error");
     }
@@ -297,7 +320,7 @@ class WebServerWorker extends Thread {
     String relPath = input.substring(1);
     String cPath = relPath.replace("/", "\\");
     filePath += cPath;     // Remove original front slash from request
-    System.out.println(filePath);
+    //System.out.println(filePath);  // Used for debugging
 
     File f;
 
