@@ -70,6 +70,10 @@ public class MyTelnetClient{
 	    }
       } while (dataToSend.indexOf("stop") < 0);
 
+      // crlf
+      toServer.println("\r\n\r\n");
+      toServer.flush();
+
       for (int i = 1; i <=20; i++){
         textFromServer = fromServer.readLine();
 
