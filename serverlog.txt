@@ -1,3 +1,18 @@
+Sequence of actions:
+
+* Visit the "root" domain: http://localhost:2540
+	* HTML Displays all of the files & directories at that address
+* Click on file link: http-streams.txt, and display contents
+* Go into SubDir0 and display HTML list of files/subdirectories, including Parent Directory link
+* Go down another level into /SubDir0/SubDir1 and display HTML list of files/subdirectories
+* Click on file link: /SubDir0/SubDir1/dir1_file1.txt and display contents
+* Click on link back to Parent Directory, returning to SubDir0
+* Now back in SubDir0, click on file link: /SubDir0/dir0_file1.txt and display contents
+
+----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------
+
 C:\Users\Luke\source\java\WebServer>java MyWebServer
 RECEIVED REQUEST FROM CLIENT
 
