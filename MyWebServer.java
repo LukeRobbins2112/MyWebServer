@@ -108,7 +108,7 @@ class FileHolder{
 
                     if (filesInDirectory[i].getName().contains(".")){
                         String dfName = filesInDirectory[i].getName();
-                        if (!dfName.endsWith(".txt") && !dfName.endsWith(".html")){
+                        if (!dfName.endsWith(".txt") && !dfName.endsWith(".html") && !dfName.endsWith(".java")){
                             continue;
                         }
                     }
@@ -390,7 +390,7 @@ class WebServerWorker extends Thread {
 
         // Content type, length
         // For length, just read the file size
-        if (f.getName().endsWith("txt")){
+        if (f.getName().endsWith("txt") || f.getName().endsWith("java")){
             int contentLength = (int)f.length();
             response.add("Content-length: " + Integer.toString(contentLength));
             response.add("Content-type: text/plain");
