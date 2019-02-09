@@ -356,6 +356,9 @@ class WebServerWorker extends Thread {
 
         response.add("<html>");
 
+        // Dynamic HTML
+        response.add("Directory contents as of: " + (new Date().toString()) + "<br><br>");
+
         // Paren directory link
         if (!filePath.equals(basePath)){
             File parFile = new File(f.getParent());
